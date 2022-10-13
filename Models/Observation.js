@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let observationSchema = new Schema({
-    dateOfObsevation: {
+    dateOfObservation: {
         type: String
     },
     heartRate: {

@@ -10,6 +10,7 @@ const userRoute = require('./routes/user.route')
 const patientRoute = require('./routes/patient.route')
 const studyRoute = require('./routes/study.route')
 const classRoute = require('./routes/class.route')
+const observationRoute = require('./routes/observation.route')
 
 // Connecting mongoDB Database
 mongoose.Promise = global.Promise
@@ -38,6 +39,7 @@ app.use('/user', userRoute)
 app.use('/patient', patientRoute)
 app.use('/study', studyRoute)
 app.use('/class', classRoute)
+app.use('/observation', observationRoute)
 
 // PORT
 const port = process.env.PORT || 4000

@@ -56,6 +56,20 @@ router.route('/all-patients-available').post(async (req, res) => {
   res.json(patients)
 })
 
+router.route('/question-update').post(async (req, res) => {
+  // console.log(req.body)
+  const {patientId, questions} = req.body
+  await patientSchema.findByIdAndUpdate(patientId, {questions: questions})
+  return res.status(200).json({ success: true })
+})
+
+router.route('/patient-all-observations').post(async (req, res) => {
+  const {patientId} = req.body
+  const tempPatient = await patientSchema.findById(patientId).populate({ path: 'observations' })
+  // console.log(tempStudy.patients)
+  return res.status(200).json(tempPatient.observations)
+})
+
 /////////////////////////////////////////////////////////////////////////////////
 router.route('/check-user').post((req, res) => {
   const { email, password } = req.body;

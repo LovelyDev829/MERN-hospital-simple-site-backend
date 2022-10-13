@@ -41,6 +41,9 @@ let patientSchema = new Schema({
       },
       answer: {
         type: Number
+      },
+      modifiedTime : {  
+        type: String
       }
     }
   ]
