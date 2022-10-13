@@ -40,7 +40,7 @@ router.route('/check-user').post((req, res) => {
     }
   })
 })
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // READ Students
 router.route('/all-users').get((req, res) => {
   userSchema.find((error, data) => {
@@ -72,8 +72,8 @@ router.route('/update-user/:id').put((req, res, next) => {
     },
     (error, data) => {
       if (error) {
-        return next(error)
         console.log(error)
+        return next(error)        
       } else {
         res.json(data)
         console.log('User updated successfully !')

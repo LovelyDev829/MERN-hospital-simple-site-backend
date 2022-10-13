@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Observation = require('./Observation');
 const Schema = mongoose.Schema;
 
 let patientSchema = new Schema({
@@ -29,9 +30,20 @@ let patientSchema = new Schema({
   dateOfFirstTreatment: {
     type: String
   },
-  observation: {
-    type: Array
-  }
+  observations: [{
+    type: Schema.Types.ObjectId,
+    ref: Observation
+  }],
+  questions: [
+    {
+      question: {
+        type: String
+      },
+      answer: {
+        type: Number
+      }
+    }
+  ]
 }, {
   collection: 'patients'
 })

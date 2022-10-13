@@ -3,46 +3,68 @@ let mongoose = require('mongoose'),
   router = express.Router()
 
 // Student Model
-let patientSchema = require('../models/Patient')
+let studySchema = require('../models/Study')
+let classSchema = require('../models/Class')
 
+// await classSchema.find().populate({ path: 'studies' })
 // CREATE Student
-router.route('/create-patient').post((req, res, next) => {
-  const {givenName, middleName, surName, gender, dateOfBirth, bloodGroup, diagnosis, dateOfFirstTreatemey} = req.body
-  console.log("create-patient", req.body)
-  patientSchema.find({
-    givenName: givenName,
-    middleName: middleName,
-    surName: surName,
-    gender: gender,
-    dateOfBirth: dateOfBirth,
-    bloodGroup: bloodGroup,
-    diagnosis: diagnosis,
-    dateOfFirstTreatemey: dateOfFirstTreatemey
-  }, (error, data) => {
-    if (error) {
-      res.json({ success: false })
+router.route('/create-study').post(async (req, res, next) => {
+  try {
+    const { className, studyTitle } = req.body
+    const data = await studySchema.findOne({ studyTitle: studyTitle })
+    if (data) return res.status(200).json({ success: false })
+    else {
+      const resClass = await classSchema.findOne({ classTitle: className })
+      if (resClass) {
+        const newStudy = new studySchema({ studyTitle: studyTitle })
+        const resStudy = await newStudy.save()
+        let studies = resClass.studies
+        studies.push(resStudy._id)
+        await classSchema.findByIdAndUpdate(resClass._id, { studies: studies })
+        return res.status(200).json({ success: true })
+      } else return res.status(200).json({ success: false })
     }
-    else if (data[0]) {
-      console.log(data[0])
-      console.log("Already exist the patient")
-      res.json({ success: false })
-    } else {
-      patientSchema.create(req.body, (error, data) => {
-        if (error) {
-          res.json({ success: false })
-        } else {
-          console.log("Added a new patient")
-          res.json({ success: true })
-        }
-      })
-    }
-  })
+  } catch (err) {
+    console.log(err)
+  }
 })
 
+// Update Student
+router.route('/add-a-patient').put(async (req, res, next) => {
+  try {
+    // console.log(req.body)
+    const { studyId, patientId } = req.body
+    const tempStudy = await studySchema.findById(studyId)
+    // console.log(tempStudy)
+    let patientArray = tempStudy.patients
+    if (patientArray.includes(patientId)) {
+      return res.status(200).json({ success: false })
+    }
+    else {
+      patientArray.push(patientId)
+      // console.log(patientArray)
+      await studySchema.findByIdAndUpdate(studyId, { patients: patientArray })
+      return res.status(200).json({ success: true })
+    }
+  } catch (err) {
+    console.log(err)
+    return res.status(200).json({ success: false })
+  }
+})
+
+// READ Students
+router.route('/study-all-patients').post(async (req, res) => {
+  const {studyId} = req.body
+  const tempStudy = await studySchema.findById(studyId).populate({ path: 'patients' })
+  // console.log(tempStudy.patients)
+  return res.status(200).json(tempStudy.patients)
+})
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 router.route('/check-user').post((req, res) => {
   const { email, password } = req.body;
   console.log("check-user", req.body)
-  patientSchema.find({ email: email, password: password }, (error, data) => {
+  studySchema.find({ email: email, password: password }, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -52,8 +74,8 @@ router.route('/check-user').post((req, res) => {
 })
 
 // READ Students
-router.route('/all-patients').get((req, res) => {
-  patientSchema.find((error, data) => {
+router.route('/all-studys').get((req, res) => {
+  studySchema.find((error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -64,7 +86,7 @@ router.route('/all-patients').get((req, res) => {
 
 // Get Single Student
 router.route('/edit-user/:id').get((req, res) => {
-  patientSchema.findById(req.params.id, (error, data) => {
+  studySchema.findById(req.params.id, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -74,19 +96,19 @@ router.route('/edit-user/:id').get((req, res) => {
 })
 
 // Update Student
-router.route('/update-patient/:id').put((req, res, next) => {
-  patientSchema.findByIdAndUpdate(
+router.route('/update-study/:id').put((req, res, next) => {
+  studySchema.findByIdAndUpdate(
     req.params.id,
     {
       $set: req.body,
     },
     (error, data) => {
       if (error) {
-        return next(error)
         console.log(error)
+        return next(error)        
       } else {
-        res.json({success: true})
-        console.log('Patient updated successfully !')
+        res.json({ success: true })
+        console.log('Study updated successfully !')
       }
     },
   )
@@ -94,7 +116,7 @@ router.route('/update-patient/:id').put((req, res, next) => {
 
 // Delete Student
 router.route('/delete-user/:id').delete((req, res, next) => {
-  patientSchema.findByIdAndRemove(req.params.id, (error, data) => {
+  studySchema.findByIdAndRemove(req.params.id, (error, data) => {
     if (error) {
       return next(error)
     } else {
