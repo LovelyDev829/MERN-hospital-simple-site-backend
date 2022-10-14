@@ -2,12 +2,12 @@ let mongoose = require('mongoose'),
   express = require('express'),
   router = express.Router()
 
-// Student Model
+//  Model
 let studySchema = require('../models/Study')
 let classSchema = require('../models/Class')
 
 // await classSchema.find().populate({ path: 'studies' })
-// CREATE Student
+// CREATE 
 router.route('/create-study').post(async (req, res, next) => {
   try {
     const { className, studyTitle } = req.body
@@ -29,7 +29,7 @@ router.route('/create-study').post(async (req, res, next) => {
   }
 })
 
-// Update Student
+// Update 
 router.route('/add-a-patient').put(async (req, res, next) => {
   try {
     // console.log(req.body)
@@ -52,79 +52,12 @@ router.route('/add-a-patient').put(async (req, res, next) => {
   }
 })
 
-// READ Students
+// READ
 router.route('/study-all-patients').post(async (req, res) => {
   const {studyId} = req.body
   const tempStudy = await studySchema.findById(studyId).populate({ path: 'patients' })
-  // console.log(tempStudy.patients)
   return res.status(200).json(tempStudy.patients)
 })
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-router.route('/check-user').post((req, res) => {
-  const { email, password } = req.body;
-  console.log("check-user", req.body)
-  studySchema.find({ email: email, password: password }, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// READ Students
-router.route('/all-studys').get((req, res) => {
-  studySchema.find((error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// Get Single Student
-router.route('/edit-user/:id').get((req, res) => {
-  studySchema.findById(req.params.id, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// Update Student
-router.route('/update-study/:id').put((req, res, next) => {
-  studySchema.findByIdAndUpdate(
-    req.params.id,
-    {
-      $set: req.body,
-    },
-    (error, data) => {
-      if (error) {
-        console.log(error)
-        return next(error)        
-      } else {
-        res.json({ success: true })
-        console.log('Study updated successfully !')
-      }
-    },
-  )
-})
-
-// Delete Student
-router.route('/delete-user/:id').delete((req, res, next) => {
-  studySchema.findByIdAndRemove(req.params.id, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.status(200).json({
-        msg: data,
-      })
-    }
-  })
-})
 
 module.exports = router

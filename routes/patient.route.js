@@ -2,11 +2,11 @@ let mongoose = require('mongoose'),
   express = require('express'),
   router = express.Router()
 
-// Student Model
+//  Model
 let patientSchema = require('../models/Patient')
 let studySchema = require('../models/Study')
 
-// CREATE Student
+// CREATE 
 router.route('/create-patient').post((req, res, next) => {
   const { givenName, middleName, surName, gender, dateOfBirth, bloodGroup, diagnosis, dateOfFirstTreatemey } = req.body
   console.log("create-patient", req.body)
@@ -40,7 +40,7 @@ router.route('/create-patient').post((req, res, next) => {
   })
 })
 
-// READ Students
+// READ 
 router.route('/all-patients-available').post(async (req, res) => {
   const studyId = req.body.studyId
   let patients = await patientSchema.find()
@@ -69,32 +69,7 @@ router.route('/patient-all-observations').post(async (req, res) => {
   // console.log(tempStudy.patients)
   return res.status(200).json(tempPatient.observations)
 })
-
-/////////////////////////////////////////////////////////////////////////////////
-router.route('/check-user').post((req, res) => {
-  const { email, password } = req.body;
-  console.log("check-user", req.body)
-  patientSchema.find({ email: email, password: password }, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// Get Single Student
-router.route('/edit-user/:id').get((req, res) => {
-  patientSchema.findById(req.params.id, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// Update Student
+// Update 
 router.route('/update-patient/:id').put((req, res, next) => {
   patientSchema.findByIdAndUpdate(
     req.params.id,
@@ -111,19 +86,6 @@ router.route('/update-patient/:id').put((req, res, next) => {
       }
     },
   )
-})
-
-// Delete Student
-router.route('/delete-user/:id').delete((req, res, next) => {
-  patientSchema.findByIdAndRemove(req.params.id, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.status(200).json({
-        msg: data,
-      })
-    }
-  })
 })
 
 module.exports = router

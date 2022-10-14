@@ -2,12 +2,12 @@ let mongoose = require('mongoose'),
     express = require('express'),
     router = express.Router()
 
-// Student Model
+//  Model
 let observationSchema = require('../models/Observation')
 let patientSchema = require('../models/Patient')
 
 // await classSchema.find().populate({ path: 'studies' })
-// CREATE Student
+// CREATE 
 router.route('/create-observation').post(async (req, res, next) => {
     try {
         const { currentPatientId, dateOfObservation, heartRate, bloodPressure, respiratoryRate, levelOfConsciousness,
